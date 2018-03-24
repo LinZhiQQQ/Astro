@@ -1,5 +1,6 @@
 package horoscopes;
 
+import com.sun.org.apache.regexp.internal.REDebugCompiler;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
@@ -16,17 +17,23 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.geometry.HPos;
+import javafx.util.StringConverter;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class CheckPane extends Pane{
     Label text = new Label();
     ImageView imgv,imgv2,imgv3;
-    String star,star1,star2;
+    String star,star1,star2,Line,stars[];
     String[] str;
     HashMap<String , Integer> map1 = new HashMap<String, Integer>(); // 星座->编号
-    int arr[][];
+    int arr[][],dates[];
     Text theStar,t1,t2,t3,t4,t5,num;
     Rectangle r1,r2,r3;
     Line l1,l2;
@@ -36,9 +43,14 @@ public class CheckPane extends Pane{
 
     CheckPane() {
         //初始化初始数据
-        init();
+        try {
+            init();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
         // 画图部分
         Pane these = this;
+
         Image bg = new Image("horoscopes/image/a.png");
         ImageView bgv = new ImageView(bg);
         bgv.setX(0);
@@ -62,12 +74,8 @@ public class CheckPane extends Pane{
         r1.setFill(Color.valueOf("#B0E2FF"));
         r1.setArcHeight(20);
         r1.setArcWidth(20);
+        r1.setOpacity(0.8);
 
-        DropShadow ds = new DropShadow();
-        ds.setOffsetY(3.0);
-        ds.setColor(Color.color(0.4,0.4,0.4));
-
-        r1.setEffect(ds);
 
         r2 = new Rectangle();
         r2.setX(620);
@@ -77,6 +85,7 @@ public class CheckPane extends Pane{
         r2.setFill(Color.valueOf("#FFE1FF"));
         r2.setArcHeight(20);
         r2.setArcWidth(20);
+        r2.setOpacity(0.8);
 
         r3 = new Rectangle();
         r3.setX(955);
@@ -90,13 +99,13 @@ public class CheckPane extends Pane{
         t1 = new Text("星座查询");
         t1.setX(250);
         t1.setY(135);
-        t1.setFont(Font.font("null", FontWeight.BOLD,25));
+        t1.setFont(Font.font("微软雅黑", FontWeight.BOLD,25));
         t1.setFill(Color.valueOf("#383838"));
 
         t2 = new Text("缘分查询");
         t2.setX(770);
         t2.setY(135);
-        t2.setFont(Font.font("null", FontWeight.BOLD,25));
+        t2.setFont(Font.font("微软雅黑", FontWeight.BOLD,25));
         t2.setFill(Color.valueOf("#383838"));
 
         l1 = new Line();
@@ -117,6 +126,7 @@ public class CheckPane extends Pane{
         vbox.setLayoutX(180);
         vbox.setLayoutY(160);
         DatePicker checkInDatePicker = new DatePicker();
+        String pattern = "yyyy-MM-dd";
 
         GridPane gridPane = new GridPane();
         gridPane.setHgap(20);
@@ -130,6 +140,30 @@ public class CheckPane extends Pane{
 
         checkInDatePicker.setMinWidth(250);
         checkInDatePicker.setMinHeight(30);
+
+        StringConverter converter = new StringConverter<LocalDate>() {
+            DateTimeFormatter dateFormatter =
+                    DateTimeFormatter.ofPattern(pattern);
+            @Override
+            public String toString(LocalDate date) {
+                if (date != null) {
+                    return dateFormatter.format(date);
+                } else {
+                    return "";
+                }
+            }
+            @Override
+            public LocalDate fromString(String string) {
+                if (string != null && !string.isEmpty()) {
+                    return LocalDate.parse(string, dateFormatter);
+                } else {
+                    return null;
+                }
+            }
+        };
+        checkInDatePicker.setConverter(converter);
+        checkInDatePicker.setPromptText(pattern.toLowerCase());
+
 
 
         gridPane.add(checkInDatePicker, 0, 1);
@@ -161,7 +195,10 @@ public class CheckPane extends Pane{
         checkInDatePicker3.setMinHeight(30);
         vbox2.getChildren().add(gridPane2);
 
-
+        checkInDatePicker2.setConverter(converter);
+        checkInDatePicker2.setPromptText(pattern.toLowerCase());
+        checkInDatePicker3.setConverter(converter);
+        checkInDatePicker3.setPromptText(pattern.toLowerCase());
 
         Image bimg = new Image("horoscopes/image/love.png");
         btn2 = new Button();
@@ -265,50 +302,15 @@ public class CheckPane extends Pane{
 
     // 通过传入出生年月日 LocalDate对象 查询星座
     public String getStars(LocalDate date) {
-        String str = null;
-        if(check(3,21,4,20,date)){
-            str = "白羊座";
-        }else if(check(4,21,5,20,date)){
-            str = "金牛座";
-        }else if(check(5,21,6,21,date)){
-            str = "双子座";
-        }else if(check(6,22,7,22,date)){
-            str = "巨蟹座";
-        }else if(check(7,23,8,22,date)){
-            str = "狮子座";
-        }else if(check(8,23,9,22,date)){
-            str = "室女座";
-        }else if(check(9,23,10,22,date)){
-            str = "天平座";
-        }else if(check(10,23,11,22,date)){
-            str = "天蝎座";
-        }else if(check(11,23,12,21,date)){
-            str = "射手座";
-        }else if(check(12,22,1,19,date)){
-            str = "摩羯座";
-        }else if(check(1,20,2,18,date)){
-            str = "水瓶座";
-        }else if(check(2,19,3,20,date)){
-            str = "双鱼座";
+        int tmp = date.getMonthValue() * 100 + date.getDayOfMonth();
+        for(int i = 0;i < 13;i++){
+            if(tmp < dates[i]){
+                return stars[i];
+            }
         }
-        return str;
+        return null;
     }
 
-    // 传入 开始日期和结束日期 和 生日 ，判断是否在这个时间段内
-    public boolean check(int a,int b,int c,int d,LocalDate date){
-        if(a > b){  // 交换日期顺序
-            a ^= c;
-            c ^= a;
-            a ^= c;
-            b ^= d;
-            d ^= b;
-            b ^= d;
-        }
-        if((date.getMonthValue() == a && date.getDayOfMonth() >= b) || (date.getMonthValue() == c && date.getDayOfMonth() <= d)){
-            return true;
-        }
-        return false;
-    }
 
 
     // 星座查询
@@ -345,10 +347,11 @@ public class CheckPane extends Pane{
         t3.setVisible(true);
         t4.setVisible(true);
         t5.setVisible(true);
-        t3.setText("男生:" + s1);
-        t4.setText("女生:" + s2);
+        t3.setText("男生：" + s1);
+        t4.setText("女生：" + s2);
         num.setX(800);
-        num.setFont(Font.font("Times New Roman", FontWeight.BOLD,50));
+        num.setFont(Font.font("等线", FontWeight.BOLD,50));
+        num.setFill(Color.rgb(255,59,48));
         imgv2.setImage(new Image("horoscopes/image/" + id1 + ".gif"));
         imgv3.setImage(new Image("horoscopes/image/" + id2 + ".gif"));
         return p;
@@ -356,7 +359,7 @@ public class CheckPane extends Pane{
 
     // 初始化 配对查询
     public void initChack(){
-        num.setFont(Font.font("Times New Roman", FontWeight.BOLD,15));
+        num.setFont(Font.font("等线", FontWeight.BOLD,15));
         num.setX(770);
         num.setText("请选择双方生日");
         t3.setVisible(false);
@@ -368,36 +371,38 @@ public class CheckPane extends Pane{
     }
 
 
-
     //初始化数据
-    public void init(){
-        str = new String[]{
-                "",
-                "你大方、明朗，全身充满活力。不管跟什么人，你都能很快的和他打成一片。虽然你十分热情，却缺乏协调性格，容易我行我素，因而发生争执。你做事不拘小节、好动、喜欢群居生活。而且你爱好自由，讨厌受拘束。你是富正义感、积极、果断的理想追求者。还有你爱帮助弱者，有亲切而勇敢的领导能力。你非常有朝气而且精力旺盛，只展示自己好的一面。",
-                "你不但好学、知识丰富，还很会发挥你优秀的头脑。温和、顺从是你最明显的个性。你很勤奋，肯脚踏实地的努力。不过你有点消极。虽然不很出色，但你温柔而体贴的性格却十分的吸引人。你信念强、能够对抗虚伪和欺诈，持有高洁的信念。因为你富于童心，所以很乐于追求新鲜的生活。你现实而且朴素，还很守本分，勤苦地开拓前途，是个表现真实自我的类型。",
-                "嗯，你善于说服别人，还是个很好的倾听者。你很会照顾朋友，不过希望你别再为小事生气哦！热情、罗曼蒂克的你，总有众多的追求者你具有双重推断的头脑及优异的口才能力。你善于临机应变，富于机智，笔墨和言辞兼备。由于你对各式各样的事都很关心，为人又很热心，所以为十二星座中双重人格最显着的类型。双子座是好奇心很强的智慧星。",
-                "巨蟹座的你不但想像力丰富，而且有很强的理解力。你坦白、大方、正直、忠于朋友。还有你十分善于理财、也很会存钱。你有一种母性的防卫能力和不挑剔朋友的顺应性。你很会模仿，并能在模仿中创造出新的东西来。对人过于同情时，你会变成双重性格，因为你感情脆弱，一听到对方的不幸，心就软了下来，同情会改变你对他人的看法。",
-                "你有着崇高的理想，为人慷慨、有恻隐心、具幽默感，所以会吸引很多人。只要你决定一件事，就不会接受别人的意见。择善固执虽然好，但也该有接受别人意见的雅量。谦虚一点、学习忍耐，不要太骄傲吧！你个性明朗、干脆，具有火焰般的热情。在你类似首领的领导者气质之下，有一颗浮燥，且容易感到寂寞的心。虽然你平时做事很紧张、积极，但一做错了什么，就容易垂头丧气。你对人的态度也是忽好忽坏。",
-                "你生来就具有艺术家的特质。你对色彩感觉丰富、有音乐欣赏力。你是个认真而害羞、脚踏实地的人。你注重细节又手巧，从小就很会整顿事情，能用手把脑子里的构思一个一个实现出来。你做事认真、很守信用，不过有时也会任性、情绪不稳定。你害羞、不善于表达自己的感情，有着纤细的感受性。你重视秩序，对于善恶、正邪，有锐利的批判力。你是所有星座中最单纯的，不但口不出恶言，而且行为端正，但由于过于清高，有时反而会得罪人。",
-                "你精力充沛、兴趣广泛、喜欢活动。你从不缺乏交往的物件，是生活在热闹中的人。你很会体贴别人、刻意追求美和正义、不喜欢争执。你公正、有理性、重视友情。虽然偶尔会任性一点，不过通常你冷静而崇尚调和，对任何事都不会狂热。你具有对人生所有经验都能理解的均衡人生观和处世态度。你是双重人格的星座。因为你迷迷糊糊的，自己都不了解自己，所以呈现双重人格，自己也不晓得。",
-                "你是个热情而乐天、不喜欢欺骗、而且很专心的人。你总能积极抓住属于你的幸运。你看起来很安静，其实你头脑很棒，而且对任何事都很热心。你超有耐性的。平常给人的感觉是慎重、沉默寡言，可是事实上是怎么样的闷骚你自己知道吧？！你洞察力很锐利，无聊时就喜欢暗地里观察别人。你不会受任何阻碍所迷惑，很专情，而且你很会选择理想的伴侣。大多人都觉得你善嫉妒、有强烈的独占欲。建议你找一些适合自己的兴趣，抒发自己过于专注的个性及占有欲，才不会给别人太大的压力哦。",
-                "你自尊心、适应力强，遇到困难时，会有条有理地处理。诚实、可信赖、头脑好是你的优点。你会带给人快乐！你兴趣广泛。虽然你会插手管无聊的事，不过还好啦，你会反省，找出自己该做的事，然后成为了不起的人物。此外，你具有正义感和爱捉弄人的双重性格，是个憎恨束缚，爱好自由的乐天派。你在日常生活及重视金钱的社会里得不到满足。 ",
-                "你不喜欢出风头，而且很现实。你喜欢清纯的爱，即使是小小的幸福，也会使你感到很大的喜悦。你保守而驯良，崇尚整洁及秩序，而且你具有诚实的责任感及强烈的耐力。你有一种确定目的后便不离放的忍耐精神。你非常朴素、爱干净。你往往因过分坚持自己的意见而吃亏。而且，由于你为人比较沉静，常被认为是性格捉摸不定的人。",
-                "你爱自由和善变，但是你的梦想无限大。你不但有很多好朋友，而且也搏得年长者得疼爱。你理想高、不喜欢受到限制。聪明而机警的你喜爱挖苦人，加上对爱慕的人忽冷忽热的，捉摸不定，所以一时较难找到理想对象。你优异的推理能力及智慧造成了敏锐的眼光和流畅的辩论能力，是个具有向未知及黑暗挑战的奋战精神的人。你是个温柔的人，即使碰见了讨厌的人，也会对他微笑。因为有点喜新厌旧、没有定性，所以有时候遭人讨厌。不过你普通蛮爆笑、挺可爱的啦！",
-                "你谦逊、有同情心、又有耐心。对心理、哲理方面有敏锐观察力。你的缺点是胆小、心志不坚跟忧虑过多。你天生便能全然接受一切现状和其他人的本来面目，而且你不会想去改变别人。你将自己内心最深处的感受潜藏于心，但是若能遇上志同道合的朋友，你也会对朋友倾诉自己的感受。对于世俗的一切，你常常会感到束手无策而拙于应付，但是你有一个非常丰富的内心世界。",
+    public void init() throws FileNotFoundException {
+
+        str = new String[13];
+        String record = null;
+        int recCount = 0;
+        try {
+            FileReader fr = new FileReader("src/horoscopes/source/stars.txt");
+            BufferedReader br = new BufferedReader(fr);
+            record = new String();
+            while ((record = br.readLine()) != null) {
+                str[recCount++] = new String(record);
+            }
+            br.close();
+            fr.close();
+        } catch (IOException e) {
+            System.out.println("Uh oh, got an IOException error!");
+            e.printStackTrace();
+        }
+
+        dates = new int[]{
+                120,218,320,420,520,621,722,822,922,1022,1122,1221,1300
         };
-        map1.put("白羊座",1);
-        map1.put("金牛座",2);
-        map1.put("双子座",3);
-        map1.put("巨蟹座",4);
-        map1.put("狮子座",5);
-        map1.put("室女座",6);
-        map1.put("天平座",7);
-        map1.put("天蝎座",8);
-        map1.put("射手座",9);
-        map1.put("摩羯座",10);
-        map1.put("水瓶座",11);
-        map1.put("双鱼座",12);
+        stars = new String[]{
+                "摩羯座","水瓶座","双鱼座","白羊座","金牛座","双子座","巨蟹座","狮子座","室女座","天平座","天蝎座","射手座","摩羯座"
+        };
+        for(int i = 1;i <= 12;i++){
+            map1.put(stars[(i + 2) % 12],i);
+            System.out.println(stars[(i + 2) % 12] + "    id = " + i);
+        }
+
+
 
         arr = new int[][]{
                 {0,0,0,0,0,0,0,0,0,0,0,0,0},
