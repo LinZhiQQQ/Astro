@@ -30,8 +30,8 @@ import java.util.*;
 public class CheckPane extends Pane{
     Label text = new Label();
     ImageView imgv,imgv2,imgv3;
-    String star,star1,star2,Line,stars[];
-    String[] str;
+    String star,star1,star2,Line;
+    String[] str,stars;
     HashMap<String , Integer> map1 = new HashMap<String, Integer>(); // 星座->编号
     int arr[][],dates[];
     Text theStar,t1,t2,t3,t4,t5,num;
@@ -322,7 +322,6 @@ public class CheckPane extends Pane{
         imgv.setX(110);
         imgv.setFitHeight(160);
         imgv.setFitWidth(160);
-        System.out.println(id);
         imgv.setImage(new Image("horoscopes/image/" + id + ".gif"));
         text.setText(str[id]);
         text.setVisible(true);
@@ -375,14 +374,40 @@ public class CheckPane extends Pane{
     public void init() throws FileNotFoundException {
 
         str = new String[13];
+        stars = new String[13];
+        arr = new int[13][13];
+        dates = new int[13];
         String record = null;
         int recCount = 0;
         try {
-            FileReader fr = new FileReader("src/horoscopes/source/stars.txt");
+            FileReader fr = new FileReader("src/horoscopes/source/stars_t.txt");
             BufferedReader br = new BufferedReader(fr);
             record = new String();
             while ((record = br.readLine()) != null) {
-                str[recCount++] = new String(record);
+                if(recCount < 13){
+                    str[recCount++] = new String(record);
+                }else if (recCount < 26){
+                    stars[recCount - 13] = new String(record);
+                    recCount++;
+                }else{
+                    dates[recCount - 26] = Integer.valueOf(record);
+                    recCount++;
+                }
+
+            }
+            br.close();
+            fr.close();
+
+
+            fr = new FileReader("src/horoscopes/source/stars_p.txt");
+            br = new BufferedReader(fr);
+            recCount = 0;
+            while ((record = br.readLine()) != null) {
+                String[] dictionary =  record.split("[\\t \\n]+");
+                for(int i=0;i<dictionary.length;i++){
+                        arr[recCount ][i] = Integer.valueOf(dictionary[i]);
+                }
+                recCount++;
             }
             br.close();
             fr.close();
@@ -390,34 +415,8 @@ public class CheckPane extends Pane{
             System.out.println("Uh oh, got an IOException error!");
             e.printStackTrace();
         }
-
-        dates = new int[]{
-                120,218,320,420,520,621,722,822,922,1022,1122,1221,1300
-        };
-        stars = new String[]{
-                "摩羯座","水瓶座","双鱼座","白羊座","金牛座","双子座","巨蟹座","狮子座","室女座","天平座","天蝎座","射手座","摩羯座"
-        };
         for(int i = 1;i <= 12;i++){
             map1.put(stars[(i + 2) % 12],i);
-            System.out.println(stars[(i + 2) % 12] + "    id = " + i);
         }
-
-
-
-        arr = new int[][]{
-                {0,0,0,0,0,0,0,0,0,0,0,0,0},
-                {0,90,75,82,47,94,65,85,70,99,58,88,79},
-                {0,68,88,72,75,45,97,57,78,61,93,66,81},
-                {0,79,76,89,71,81,57,93,69,86,64,99,48},
-                {0,52,82,78,89,61,84,66,92,70,87,74,97},
-                {0,97,56,79,69,87,72,81,45,92,77,84,62},
-                {0,61,91,76,88,66,89,49,81,72,95,55,84},
-                {0,85,74,98,58,88,77,90,71,80,47,95,64},
-                {0,60,80,68,97,65,84,73,87,47,76,57,92},
-                {0,92,70,81,65,98,58,86,68,89,75,78,44},
-                {0,43,97,70,80,59,92,51,85,64,88,74,77},
-                {0,72,41,91,58,78,64,96,51,82,69,87,60},
-                {0,71,78,46,93,61,65,74,99,54,82,69,88}
-        };
     }
 }
