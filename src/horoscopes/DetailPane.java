@@ -48,7 +48,6 @@ public class DetailPane extends Pane {
                 int flag = 0;
                 while ((record = br.readLine()) != null) {
                     detail[i][recCount][flag] = record;
-                    System.out.println(flag + " " + detail[i][recCount][flag]);
                     if(flag == 1){
                         recCount++;
                         flag = 0;
@@ -59,9 +58,6 @@ public class DetailPane extends Pane {
                 br.close();
                 fr.close();
             }
-
-
-
         } catch (IOException e) {
             System.out.println("Uh oh, got an IOException error!");
             e.printStackTrace();
