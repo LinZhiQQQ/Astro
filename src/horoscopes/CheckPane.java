@@ -1,6 +1,7 @@
 package horoscopes;
 
 import com.sun.org.apache.regexp.internal.REDebugCompiler;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
@@ -17,6 +18,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.geometry.HPos;
+import javafx.stage.Stage;
 import javafx.util.StringConverter;
 
 import java.io.BufferedReader;
@@ -33,7 +35,7 @@ public class CheckPane extends Pane{
     String star,star1,star2,Line;
     String[] str,stars;
     HashMap<String , Integer> map1 = new HashMap<String, Integer>(); // 星座->编号
-    int arr[][],dates[];
+    int arr[][],dates[],id1,id2;
     Text theStar,t1,t2,t3,t4,t5,num;
     Rectangle r1,r2,r3;
     Line l1,l2;
@@ -210,6 +212,16 @@ public class CheckPane extends Pane{
         btn2.setMinWidth(40);
         btn2.setMinHeight(35);
 
+
+        btn = new Button();
+        btn.setText("查看详情");
+        btn.setVisible(false);
+        btn.setStyle("-fx-base: #ee2211;");
+        btn.setLayoutX(798);
+        btn.setLayoutY(560);
+        btn.setMinWidth(40);
+        btn.setMinHeight(35);
+
         img = new Image("horoscopes/image/all.gif");
         imgv = new ImageView(img);
         imgv.setY(235);
@@ -272,7 +284,7 @@ public class CheckPane extends Pane{
         num.setY(500);
         num.setFont(Font.font("等线", FontWeight.BOLD,50));
 
-        this.getChildren().addAll(bgv,tv,r1,r2,r3,t1,t2,l1,l2,vbox,vbox2,btn2,imgv,text,imgv2,imgv3,t3,t4,num,t5,theStar);
+        this.getChildren().addAll(bgv,tv,r1,r2,r3,t1,t2,l1,l2,vbox,vbox2,btn,btn2,imgv,text,imgv2,imgv3,t3,t4,num,t5,theStar);
         // 配对按钮监听
         btn2.setOnAction(e->{
             LocalDate date1 = checkInDatePicker2.getValue();
@@ -282,9 +294,30 @@ public class CheckPane extends Pane{
             }else {
                 star1 = getStars(date1);
                 star2 = getStars(date2);
+                id1 = map1.get(star1);
+                id2 = map1.get(star2);
                 num.setText(""+checkIt(star1,star2));
+                btn.setVisible(true);
             }
 
+        });
+
+        checkInDatePicker2.setOnAction(e->{
+            LocalDate date = checkInDatePicker2.getValue();
+            if(date == null){
+                initChack();
+            }
+        });
+
+        checkInDatePicker3.setOnAction(e->{
+            LocalDate date = checkInDatePicker3.getValue();
+            if(date == null){
+                initChack();
+            }
+        });
+
+        btn.setOnAction(e->{
+            show(id1,id2);
         });
 
         // 查询监听
@@ -364,11 +397,20 @@ public class CheckPane extends Pane{
         t3.setVisible(false);
         t4.setVisible(false);
         t5.setVisible(false);
+        btn.setVisible(false);
         imgv2.setImage(new Image("horoscopes/image/"));
         imgv3.setImage(new Image("horoscopes/image/"));
 
     }
-
+    public void show(int a,int b){
+        Stage stage = new Stage();
+        Scene scene;
+        DetailPane detailPane = new DetailPane(a,b);
+        scene = new Scene(detailPane,500,200);
+        stage.setTitle("horoscopes");
+        stage.setScene(scene);
+        stage.show();
+    }
 
     //初始化数据
     public void init() throws FileNotFoundException {
