@@ -13,17 +13,21 @@ import java.io.IOException;
 
 public class DetailPane extends Pane {
     public static String detail[][][];
+
     DetailPane(int a,int b){
+
         Image bg = new Image("horoscopes/image/bg2.jpg");
         ImageView bgv = new ImageView(bg);
         bgv.setX(0);
         bgv.setY(0);
+
         Label text1 = new Label(detail[a][b][0]);
         Label text2 = new Label(detail[a][b][1]);
         text1.setLayoutX(180);
         text1.setLayoutY(20);
         text1.setFont(Font.font("等线", FontWeight.BOLD,18));
         text1.setTextFill(Color.valueOf("#FFFFFF"));
+
         text2.setLayoutX(25);
         text2.setLayoutY(60);
         text2.setMaxWidth(450);

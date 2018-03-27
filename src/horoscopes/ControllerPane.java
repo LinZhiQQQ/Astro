@@ -14,7 +14,11 @@ public class ControllerPane extends Pane{
     Painting painting = new Painting();
     ControllerPane() {
         //初始化初始数据
-        painting.init();
+        try {
+            painting.init();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
         this.getChildren().addAll(painting.bgv, painting.tv, painting.r1, painting.r2, painting.r3, painting.t1, painting.t2, painting.l1, painting.l2, painting.vbox, painting.vbox2, painting.btn, painting.btn2, painting.imgv, painting.text, painting.imgv2, painting.imgv3, painting.t3, painting.t4, painting.num, painting.t5, painting.theStar);
 
         // 配对按钮监听
@@ -57,7 +61,6 @@ public class ControllerPane extends Pane{
             }
         });
     }
-
     // 通过传入出生年月日 LocalDate对象 查询星座
     public String getStars(LocalDate date) {
         int tmp = date.getMonthValue() * 100 + date.getDayOfMonth();
@@ -68,7 +71,6 @@ public class ControllerPane extends Pane{
         }
         return null;
     }
-
     // 星座查询
     public void change(String s){
         int id = painting.map1.get(s);
@@ -82,7 +84,6 @@ public class ControllerPane extends Pane{
         painting.text.setText(painting.str[id]);
         painting.text.setVisible(true);
     }
-
     // 星座查询初始化
     public void initChange(){
         painting.imgv.setY(230);
@@ -93,7 +94,6 @@ public class ControllerPane extends Pane{
         painting.text.setVisible(false);
         painting.theStar.setVisible(false);
     }
-
     // 配对查询数据改变
     public int checkIt(String s1,String s2){
         int id1 = painting.map1.get(s1);
@@ -111,7 +111,6 @@ public class ControllerPane extends Pane{
         painting.imgv3.setImage(new Image("horoscopes/image/" + id2 + ".gif"));
         return p;
     }
-
     // 初始化 配对查询
     public void initChack(){
         painting.num.setFont(Font.font("等线", FontWeight.BOLD,15));
@@ -125,7 +124,6 @@ public class ControllerPane extends Pane{
         painting.imgv2.setImage(new Image("horoscopes/image/"));
         painting.imgv3.setImage(new Image("horoscopes/image/"));
     }
-
     public void show(int a,int b){
         Stage stage = new Stage();
         Scene scene;

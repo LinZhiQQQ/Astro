@@ -234,9 +234,8 @@ class Painting {
         num.setY(500);
         num.setFont(Font.font("等线", FontWeight.BOLD,50));
     }
-
     //初始化数据
-    public void init() {
+    public void init() throws FileNotFoundException {
         str = new String[13];
         stars = new String[13];
         arr = new int[13][13];
