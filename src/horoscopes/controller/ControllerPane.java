@@ -1,5 +1,7 @@
-package horoscopes;
+package horoscopes.controller;
 
+import horoscopes.view.DetailPane;
+import horoscopes.view.Painting;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
@@ -12,7 +14,7 @@ import java.time.LocalDate;
 
 public class ControllerPane extends Pane{
     Painting painting = new Painting();
-    ControllerPane() {
+    public ControllerPane() {
         //初始化初始数据
         try {
             painting.init();
@@ -80,7 +82,7 @@ public class ControllerPane extends Pane{
         painting.imgv.setX(110);
         painting.imgv.setFitHeight(160);
         painting.imgv.setFitWidth(160);
-        painting.imgv.setImage(new Image("horoscopes/image/" + id + ".gif"));
+        painting.imgv.setImage(new Image("horoscopes/model/image/" + id + ".gif"));
         painting.text.setText(painting.str[id]);
         painting.text.setVisible(true);
     }
@@ -90,7 +92,7 @@ public class ControllerPane extends Pane{
         painting.imgv.setX(150);
         painting.imgv.setFitHeight(360);
         painting.imgv.setFitWidth(360);
-        painting.imgv.setImage(new Image("horoscopes/image/all.gif"));
+        painting.imgv.setImage(new Image("horoscopes/model/image/all.gif"));
         painting.text.setVisible(false);
         painting.theStar.setVisible(false);
     }
@@ -107,8 +109,8 @@ public class ControllerPane extends Pane{
         painting.num.setX(800);
         painting.num.setFont(Font.font("等线", FontWeight.BOLD,50));
         painting.num.setFill(Color.rgb(255,59,48));
-        painting.imgv2.setImage(new Image("horoscopes/image/" + id1 + ".gif"));
-        painting.imgv3.setImage(new Image("horoscopes/image/" + id2 + ".gif"));
+        painting.imgv2.setImage(new Image("horoscopes/model/image/" + id1 + ".gif"));
+        painting.imgv3.setImage(new Image("horoscopes/model/image/" + id2 + ".gif"));
         return p;
     }
     // 初始化 配对查询
@@ -121,8 +123,8 @@ public class ControllerPane extends Pane{
         painting.t4.setVisible(false);
         painting.t5.setVisible(false);
         painting.btn.setVisible(false);
-        painting.imgv2.setImage(new Image("horoscopes/image/"));
-        painting.imgv3.setImage(new Image("horoscopes/image/"));
+        painting.imgv2.setImage(new Image("horoscopes/model/image/"));
+        painting.imgv3.setImage(new Image("horoscopes/model/image/"));
     }
     public void show(int a,int b){
         Stage stage = new Stage();

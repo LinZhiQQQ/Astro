@@ -1,4 +1,4 @@
-package horoscopes;
+package horoscopes.view;
 
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -14,9 +14,9 @@ import java.io.IOException;
 public class DetailPane extends Pane {
     public static String detail[][][];
 
-    DetailPane(int a,int b){
+    public DetailPane(int a, int b){
 
-        Image bg = new Image("horoscopes/image/bg2.jpg");
+        Image bg = new Image("horoscopes/model/image/bg2.jpg");
         ImageView bgv = new ImageView(bg);
         bgv.setX(0);
         bgv.setY(0);
@@ -41,7 +41,7 @@ public class DetailPane extends Pane {
         detail = new String[13][13][2];
         try {
             for(int i = 1;i <= 12;i++){
-                FileReader fr = new FileReader("src/horoscopes/source/" + i + ".txt");
+                FileReader fr = new FileReader("src/horoscopes/model/data/" + i + ".txt");
                 BufferedReader br = new BufferedReader(fr);
                 String record = new String();
                 int recCount = 1;

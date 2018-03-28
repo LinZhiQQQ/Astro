@@ -1,4 +1,4 @@
-package horoscopes;
+package horoscopes.view;
 import javafx.geometry.HPos;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
@@ -22,29 +22,30 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 
-class Painting {
-    Label text = new Label();
-    ImageView imgv,imgv2,imgv3,bgv,tv;
-    String star,star1,star2,Line;
-    String[] str,stars;
-    HashMap<String , Integer> map1 = new HashMap<String, Integer>(); // 星座->编号
-    int arr[][],dates[],id1,id2;
-    Text theStar,t1,t2,t3,t4,t5,num;
-    Rectangle r1,r2,r3;
-    javafx.scene.shape.Line l1,l2;
-    VBox vbox,vbox2;
-    Button btn,btn2;
-    Image img,img2,img3,bg,title;
-    DatePicker checkInDatePicker,checkInDatePicker2,checkInDatePicker3;
+public class Painting {
+    public Label text = new Label();
+    public ImageView imgv,imgv2,imgv3,bgv,tv;
+    public String star,star1,star2,Line;
+    public String[] str,stars;
+    public HashMap<String , Integer> map1 = new HashMap<String, Integer>(); // 星座->编号
+    public int arr[][],dates[],id1,id2;
+    public Text theStar,t1,t2,t3,t4,t5,num;
+    public Rectangle r1,r2,r3;
+    public javafx.scene.shape.Line l1,l2;
+    public VBox vbox,vbox2;
+    public Button btn;
+    public Button btn2;
+    public Image img,img2,img3,bg,title;
+    public DatePicker checkInDatePicker,checkInDatePicker2,checkInDatePicker3;
 
-    Painting(){
-        bg = new Image("horoscopes/image/a.png");
+    public Painting(){
+        bg = new Image("horoscopes/model/image/a.png");
         bgv = new ImageView(bg);
         bgv.setX(0);
         bgv.setY(0);
         bgv.setFitHeight(90);
         bgv.setFitWidth(1160);
-        title = new Image("horoscopes/image/zxdf.png");
+        title = new Image("horoscopes/model/image/zxdf.png");
         tv = new ImageView(title);
         tv.setY(0);
         tv.setX(460);
@@ -164,7 +165,7 @@ class Painting {
         checkInDatePicker2.setPromptText(pattern.toLowerCase());
         checkInDatePicker3.setConverter(converter);
         checkInDatePicker3.setPromptText(pattern.toLowerCase());
-        Image bimg = new Image("horoscopes/image/love.png");
+        Image bimg = new Image("horoscopes/model/image/love.png");
         btn2 = new Button();
         btn2.setStyle("-fx-base: #ee2211;");
         btn2.setGraphic(new ImageView(bimg));
@@ -181,7 +182,7 @@ class Painting {
         btn.setLayoutY(560);
         btn.setMinWidth(40);
         btn.setMinHeight(35);
-        img = new Image("horoscopes/image/all.gif");
+        img = new Image("horoscopes/model/image/all.gif");
         imgv = new ImageView(img);
         imgv.setY(235);
         imgv.setX(130);
@@ -193,13 +194,13 @@ class Painting {
         text.setWrapText(true);
         text.setFont(Font.font("等线", FontWeight.NORMAL,13));
         text.setTextFill(Color.BLACK);
-        img2 = new Image("horoscopes/image/");
+        img2 = new Image("horoscopes/model/image/");
         imgv2 = new ImageView(img2);
         imgv2.setY(410);
         imgv2.setX(600);
         imgv2.setFitHeight(180);
         imgv2.setFitWidth(180);
-        img3 = new Image("horoscopes/image/");
+        img3 = new Image("horoscopes/model/image/");
         imgv3 = new ImageView(img2);
         imgv3.setY(410);
         imgv3.setX(870);
@@ -243,7 +244,7 @@ class Painting {
         String record = null;
         int recCount = 0;
         try {
-            FileReader fr = new FileReader("src/horoscopes/source/stars_t.txt");
+            FileReader fr = new FileReader("src/horoscopes/model/data/stars_t.txt");
             BufferedReader br = new BufferedReader(fr);
             record = new String();
             while ((record = br.readLine()) != null) {
@@ -259,7 +260,7 @@ class Painting {
             }
             br.close();
             fr.close();
-            fr = new FileReader("src/horoscopes/source/stars_p.txt");
+            fr = new FileReader("src/horoscopes/model/data/stars_p.txt");
             br = new BufferedReader(fr);
             recCount = 0;
             while ((record = br.readLine()) != null) {
